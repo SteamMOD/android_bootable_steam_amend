@@ -542,7 +542,16 @@ int create_lagfix_partition(int id) {
   int loop = get_loop_options(name);
   char tmp[256];
   if (ft==0) {
-    sprintf(tmp,"/sbin/fat.format -l %s -F 32 -S 4096 -s 4 %s",name,blockname);
+    if (id==0) {
+      sprintf(tmp,"/sbin/fat.format -l %s -F 32 -S 4096 -s 4 %s",name,blockname);
+      // we can't create small partitions that are valid as rfs with fat.format, so we'll use some compressed pre-made valid rfs images
+    } else {
+      if (id==1) {
+        sprintf(tmp,"gunzip -c /res/misc/dbdata.rfs.gz | dd of=%s",blockname);
+      } else {
+        sprintf(tmp,"gunzip -c /res/misc/cache.rfs.gz | dd of=%s",blockname);
+      }
+    }
     __system(tmp);
   } else if (ft==1) {
     sprintf(tmp,"/sbin/mkfs.ext2 -L %s -b 4096 -m 0 -F %s",name,blockname);
