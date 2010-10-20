@@ -95,7 +95,7 @@ int nandroid_backup_partition_extended(const char* backup_path, char* root, int 
 
     struct stat file_info;
     mkyaffs2image_callback callback = NULL;
-    if (0 != stat("/sdcard/clockworkmod/.hidenandroidprogress", &file_info)) {
+    if (0 != stat("/mnt/sdcard/clockworkmod/.hidenandroidprogress", &file_info)) {
         callback = yaffs_callback;
     }
     
@@ -122,17 +122,21 @@ int nandroid_backup_partition(const char* backup_path, char* root) {
     return nandroid_backup_partition_extended(backup_path, root, 1);
 }
 
-int nandroid_backup(const char* backup_path)
+int nandroid_backup(const char* backup_path) {
+  return nandroid_backup_flags(backup_path,0);
+}
+
+int nandroid_backup_flags(const char* backup_path, int flags)
 {
     ui_set_background(BACKGROUND_ICON_INSTALLING);
     
     if (ensure_root_path_mounted("SDCARD:") != 0)
-        return print_and_error("Can't mount /sdcard\n");
+        return print_and_error("Can't mount /mnt/sdcard\n");
     
     int ret;
     struct statfs s;
-    if (0 != (ret = statfs("/sdcard", &s)))
-        return print_and_error("Unable to stat /sdcard\n");
+    if (0 != (ret = statfs("/mnt/sdcard", &s)))
+        return print_and_error("Unable to stat /mnt/sdcard\n");
     uint64_t bavail = s.f_bavail;
     uint64_t bsize = s.f_bsize;
     uint64_t sdcard_free = bavail * bsize;
@@ -159,8 +163,10 @@ int nandroid_backup(const char* backup_path)
         return print_and_error("Error while dumping recovery image!\n");
 #endif
 
+    if (!(flags & DONT_BACKUP_SYSTEM)) {
     if (0 != (ret = nandroid_backup_partition(backup_path, "SYSTEM:")))
         return ret;
+    }
 
     if (0 != (ret = nandroid_backup_partition(backup_path, "DATA:")))
         return ret;
@@ -171,9 +177,9 @@ int nandroid_backup(const char* backup_path)
 #endif
 
     struct stat st;
-    if (0 != stat("/sdcard/.android_secure", &st))
+    if (0 != stat("/mnt/sdcard/.android_secure", &st))
     {
-        ui_print("No /sdcard/.android_secure found. Skipping backup of applications on external storage.\n");
+        ui_print("No /mnt/sdcard/.android_secure found. Skipping backup of applications on external storage.\n");
     }
     else
     {
@@ -182,6 +188,9 @@ int nandroid_backup(const char* backup_path)
     }
 
     if (0 != (ret = nandroid_backup_partition_extended(backup_path, "CACHE:", 0)))
+        return ret;
+
+    if (0 != (ret = nandroid_backup_partition_extended(backup_path, "EFS:", 0)))
         return ret;
 
     if (0 != stat(SDEXT_DEVICE, &st))
@@ -235,7 +244,7 @@ int nandroid_restore_partition_extended(const char* backup_path, const char* roo
     ensure_directory(mount_point);
 
     unyaffs_callback callback = NULL;
-    if (0 != stat("/sdcard/clockworkmod/.hidenandroidprogress", &file_info)) {
+    if (0 != stat("/mnt/sdcard/clockworkmod/.hidenandroidprogress", &file_info)) {
         callback = yaffs_callback;
     }
 
@@ -279,7 +288,7 @@ int nandroid_restore(const char* backup_path, int restore_boot, int restore_syst
     yaffs_files_total = 0;
 
     if (ensure_root_path_mounted("SDCARD:") != 0)
-        return print_and_error("Can't mount /sdcard\n");
+        return print_and_error("Can't mount /mnt/sdcard\n");
     
     char tmp[PATH_MAX];
 
@@ -339,11 +348,11 @@ void nandroid_generate_timestamp_path(char* backup_path)
     {
         struct timeval tp;
         gettimeofday(&tp, NULL);
-        sprintf(backup_path, "/sdcard/clockworkmod/backup/%d", tp.tv_sec);
+        sprintf(backup_path, "/mnt/sdcard/clockworkmod/backup/%d", tp.tv_sec);
     }
     else
     {
-        strftime(backup_path, PATH_MAX, "/sdcard/clockworkmod/backup/%F.%H.%M.%S", tmp);
+        strftime(backup_path, PATH_MAX, "/mnt/sdcard/clockworkmod/backup/%F.%H.%M.%S", tmp);
     }
 }
 

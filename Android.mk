@@ -13,10 +13,13 @@ LOCAL_SRC_FILES := \
 	legacy.c \
 	commands.c \
 	recovery.c \
+	graphsh.c \
 	install.c \
+	truncate.c \
+	lagfixutils.c \
 	roots.c \
 	ui.c \
-	verifier.c
+	verifier.c 
 
 LOCAL_SRC_FILES += \
     reboot.c \
@@ -44,7 +47,7 @@ LOCAL_MODULE := recovery
 
 LOCAL_FORCE_STATIC_EXECUTABLE := true
 
-RECOVERY_VERSION := ClockworkMod Recovery v2.5.1.0
+RECOVERY_VERSION := ClockworkMod Recovery v2.5.1.0 lagfix edition
 LOCAL_CFLAGS += -DRECOVERY_VERSION="$(RECOVERY_VERSION)"
 RECOVERY_API_VERSION := 2
 LOCAL_CFLAGS += -DRECOVERY_API_VERSION=$(RECOVERY_API_VERSION)

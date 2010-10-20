@@ -41,6 +41,7 @@
 
 #include "extendedcommands.h"
 #include "commands.h"
+#include "lagfixutils.h"
 
 static const struct option OPTIONS[] = {
   { "send_intent", required_argument, NULL, 's' },
@@ -559,6 +560,12 @@ main(int argc, char **argv) {
             return reboot_main(argc, argv);
         if (strstr(argv[0], "setprop"))
             return setprop_main(argc, argv);
+        if (strstr(argv[0], "graphsh"))
+            return graphsh_main(argc, argv);
+        if (strstr(argv[0], "truncate"))
+            return truncate_main(argc,argv);
+        if (strstr(argv[0], "lagfixer"))
+            return lagfixer_main(argc,argv);
 		return busybox_driver(argc, argv);
 	}
     __system("/sbin/postrecoveryboot.sh");
@@ -612,6 +619,9 @@ main(int argc, char **argv) {
     if (register_update_commands(&ctx)) {
         LOGE("Can't install update commands\n");
     }
+
+    // we don't want signature check for official upgrades either
+    signature_check_enabled = 0;
 
     if (update_package != NULL) {
         if (wipe_data && erase_root("DATA:")) status = INSTALL_ERROR;

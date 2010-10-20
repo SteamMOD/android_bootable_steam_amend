@@ -110,7 +110,7 @@ void show_install_update_menu()
                 break;
             case ITEM_APPLY_SDCARD:
             {
-                if (confirm_selection("Confirm install?", "Yes - Install /sdcard/update.zip"))
+                if (confirm_selection("Confirm install?", "Yes - Install /mnt/sdcard/update.zip"))
                     install_zip(SDCARD_PACKAGE_FILE);
                 break;
             }
@@ -308,7 +308,7 @@ char* choose_file_menu(const char* directory, const char* fileExtensionOrDirecto
 void show_choose_zip_menu()
 {
     if (ensure_root_path_mounted("SDCARD:") != 0) {
-        LOGE ("Can't mount /sdcard\n");
+        LOGE ("Can't mount /mnt/sdcard\n");
         return;
     }
 
@@ -317,12 +317,12 @@ void show_choose_zip_menu()
                                 NULL 
     };
     
-    char* file = choose_file_menu("/sdcard/", ".zip", headers);
+    char* file = choose_file_menu("/mnt/sdcard/", ".zip", headers);
     if (file == NULL)
         return;
     char sdcard_package_file[1024];
     strcpy(sdcard_package_file, "SDCARD:");
-    strcat(sdcard_package_file,  file + strlen("/sdcard/"));
+    strcat(sdcard_package_file,  file + strlen("/mnt/sdcard/"));
     static char* confirm_install  = "Confirm install?";
     static char confirm[PATH_MAX];
     sprintf(confirm, "Yes - Install %s", basename(file));
@@ -374,7 +374,7 @@ __system(const char *command)
 void show_nandroid_restore_menu()
 {
     if (ensure_root_path_mounted("SDCARD:") != 0) {
-        LOGE ("Can't mount /sdcard\n");
+        LOGE ("Can't mount /mnt/sdcard\n");
         return;
     }
     
@@ -383,7 +383,7 @@ void show_nandroid_restore_menu()
                                 NULL 
     };
 
-    char* file = choose_file_menu("/sdcard/clockworkmod/backup/", NULL, headers);
+    char* file = choose_file_menu("/mnt/sdcard/clockworkmod/backup/", NULL, headers);
     if (file == NULL)
         return;
 
@@ -419,7 +419,7 @@ void show_mount_usb_storage_menu()
 int confirm_selection(const char* title, const char* confirm)
 {
     struct stat info;
-    if (0 == stat("/sdcard/clockworkmod/.no_confirm", &info))
+    if (0 == stat("/mnt/sdcard/clockworkmod/.no_confirm", &info))
         return 1;
 
     char* confirm_headers[]  = {  title, "  THIS CAN NOT BE UNDONE.", "", NULL };
@@ -463,11 +463,11 @@ int format_non_mtd_device(const char* root)
     }
 
     static char tmp[PATH_MAX];
-    sprintf(tmp, "rm -rf %s/*", path);
+    sprintf(tmp, "rm -rf %s*", path);
     __system(tmp);
-    sprintf(tmp, "rm -rf %s/.*", path);
+    sprintf(tmp, "rm -rf %s.*", path);
     __system(tmp);
-    
+
     ensure_root_path_unmounted(root);
     return 0;
 }
@@ -488,7 +488,7 @@ void show_partition_menu()
         { "mount /system", "unmount /system", "SYSTEM:" },
         { "mount /data", "unmount /data", "DATA:" },
         { "mount /cache", "unmount /cache", "CACHE:" },
-        { "mount /sdcard", "unmount /sdcard", "SDCARD:" },
+        { "mount /mnt/sdcard", "unmount /mnt/sdcard", "SDCARD:" },
         { "mount /sd-ext", "unmount /sd-ext", "SDEXT:" }
         };
         
@@ -652,7 +652,7 @@ int run_and_remove_extendedcommand()
         }
         sleep(1);
     }
-    remove("/sdcard/clockworkmod/.recoverycheckpoint");
+    remove("/mnt/sdcard/clockworkmod/.recoverycheckpoint");
     if (i == 0) {
         ui_print("Timed out waiting for SD card... continuing anyways.");
     }
@@ -679,7 +679,7 @@ int amend_main(int argc, char** argv)
 void show_nandroid_advanced_restore_menu()
 {
     if (ensure_root_path_mounted("SDCARD:") != 0) {
-        LOGE ("Can't mount /sdcard\n");
+        LOGE ("Can't mount /mnt/sdcard\n");
         return;
     }
 
@@ -692,7 +692,7 @@ void show_nandroid_advanced_restore_menu()
                                 NULL
     };
 
-    char* file = choose_file_menu("/sdcard/clockworkmod/backup/", NULL, advancedheaders);
+    char* file = choose_file_menu("/mnt/sdcard/clockworkmod/backup/", NULL, advancedheaders);
     if (file == NULL)
         return;
 
@@ -763,11 +763,11 @@ void show_nandroid_menu()
                 {
                     struct timeval tp;
                     gettimeofday(&tp, NULL);
-                    sprintf(backup_path, "/sdcard/clockworkmod/backup/%d", tp.tv_sec);
+                    sprintf(backup_path, "/mnt/sdcard/clockworkmod/backup/%d", tp.tv_sec);
                 }
                 else
                 {
-                    strftime(backup_path, sizeof(backup_path), "/sdcard/clockworkmod/backup/%F.%H.%M.%S", tmp);
+                    strftime(backup_path, sizeof(backup_path), "/mnt/sdcard/clockworkmod/backup/%F.%H.%M.%S", tmp);
                 }
                 nandroid_backup(backup_path);
             }
@@ -804,6 +804,9 @@ void show_advanced_menu()
                             "Partition SD Card",
                             "Fix Permissions",
 #endif
+                            "Install Superuser",
+                            "Lagfix options",
+                            "Reboot into Download",
                             NULL
     };
 
@@ -906,6 +909,23 @@ void show_advanced_menu()
                 ui_print("Done!\n");
                 break;
             }
+            case 7:
+            {
+              if (confirm_selection("Confirm root","Yes - apply root to device")) {
+                apply_root_to_device();
+              }
+              break;
+            }
+            case 8:
+            {
+              lagfix_menu();
+              break;
+            }
+            case 9:
+            {
+              __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "download");
+              break;
+            }
         }
     }
 }
@@ -956,7 +976,7 @@ void handle_failure(int ret)
         return;
     if (0 != ensure_root_path_mounted("SDCARD:"))
         return;
-    mkdir("/sdcard/clockworkmod", S_IRWXU);
-    __system("cp /tmp/recovery.log /sdcard/clockworkmod/recovery.log");
-    ui_print("/tmp/recovery.log was copied to /sdcard/clockworkmod/recovery.log. Please open ROM Manager to report the issue.\n");
+    mkdir("/mnt/sdcard/clockworkmod", S_IRWXU);
+    __system("cp /tmp/recovery.log /mnt/sdcard/clockworkmod/recovery.log");
+    ui_print("/tmp/recovery.log was copied to /mnt/sdcard/clockworkmod/recovery.log. Please open ROM Manager to report the issue.\n");
 }

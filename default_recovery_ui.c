@@ -78,6 +78,7 @@ int device_handle_key(int key_code, int visible) {
             case KEY_CAMERA:
             case KEY_F21:
             case KEY_SEND:
+            case KEY_M: // home button on SGS
                 return SELECT_ITEM;
             
             case KEY_END:
