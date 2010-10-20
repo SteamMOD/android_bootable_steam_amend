@@ -560,7 +560,7 @@ int create_lagfix_partition(int id) {
     truncate(tmp,loopsize);
     sprintf(tmp,"losetup /dev/block/loop0 %s/.extfs",looppos);
     __system(tmp);
-    __system("/sbin/mkfs.ext2 -b 4096 -m -F /dev/block/loop0");
+    __system("/sbin/mkfs.ext2 -b 4096 -m 0 -F /dev/block/loop0");
     __system("losetup -d /dev/block/loop0");
     sprintf(tmp,"umount %s",blockname);
     __system(tmp);
