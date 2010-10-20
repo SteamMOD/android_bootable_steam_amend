@@ -388,7 +388,7 @@ int ensure_lagfix_mount_points(const RootInfo *info) {
       __system("mkdir /res/odata");
       __system("chmod 700 /res/odata");
       if (getfsopts==0) {
-        __system("mount -t rfs /dev/block/mmcblk0p2 /res/odata");
+        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/mmcblk0p2 /res/odata");
       } else if (getfsopts==1) {
         __system("mount -t ext2 /dev/block/mmcblk0p2 /res/odata");
       } else if (getfsopts==2) {
@@ -398,7 +398,7 @@ int ensure_lagfix_mount_points(const RootInfo *info) {
       __system("mount -t ext2 /dev/block/loop1 /data");
     } else {
       if (getfsopts==0) {
-        __system("mount -t rfs /dev/block/mmcblk0p2 /data");
+        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/mmcblk0p2 /data");
       } else if (getfsopts==1) {
         __system("mount -t ext2 /dev/block/mmcblk0p2 /data");
       } else if (getfsopts==2) {
@@ -421,7 +421,7 @@ int ensure_lagfix_mount_points(const RootInfo *info) {
       __system("mkdir /res/odbdata");
       __system("chmod 700 /res/odbdata");
       if (getfsopts==0) {
-        __system("mount -t rfs /dev/block/stl10 /res/odbdata");
+        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/stl10 /res/odbdata");
       } else if (getfsopts==1) {
         __system("mount -t ext2 /dev/block/stl10 /res/odbdata");
       } else if (getfsopts==2) {
@@ -431,7 +431,7 @@ int ensure_lagfix_mount_points(const RootInfo *info) {
       __system("mount -t ext2 /dev/block/loop2 /dbdata");
     } else {
       if (getfsopts==0) {
-        __system("mount -t rfs /dev/block/stl10 /dbdata");
+        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/stl10 /dbdata");
       } else if (getfsopts==1) {
         __system("mount -t ext2 /dev/block/stl10 /dbdata");
       } else if (getfsopts==2) {
@@ -446,7 +446,7 @@ int ensure_lagfix_mount_points(const RootInfo *info) {
       __system("mkdir /res/ocache");
       __system("chmod 700 /res/ocache");
       if (getfsopts==0) {
-        __system("mount -t rfs /dev/block/stl11 /res/ocache");
+        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/stl11 /res/ocache");
       } else if (getfsopts==1) {
         __system("mount -t ext2 /dev/block/stl11 /res/ocache");
       } else if (getfsopts==2) {
@@ -456,7 +456,7 @@ int ensure_lagfix_mount_points(const RootInfo *info) {
       __system("mount -t ext2 /dev/block/loop3 /cache");
     } else {
       if (getfsopts==0) {
-        __system("mount -t rfs /dev/block/stl11 /cache");
+        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/stl11 /cache");
       } else if (getfsopts==1) {
         __system("mount -t ext2 /dev/block/stl11 /cache");
       } else if (getfsopts==2) {
@@ -542,13 +542,13 @@ int create_lagfix_partition(int id) {
   int loop = get_loop_options(name);
   char tmp[256];
   if (ft==0) {
-    sprintf(tmp,"/sbin/fat.format %s",blockname);
+    sprintf(tmp,"/sbin/fat.format -l %s -F 32 -S 4096 -s 4 %s",name,blockname);
     __system(tmp);
   } else if (ft==1) {
-    sprintf(tmp,"/sbin/mkfs.ext2 %s",blockname);
+    sprintf(tmp,"/sbin/mkfs.ext2 -L %s -b 4096 -m 0 -F %s",name,blockname);
     __system(tmp);
   } else if (ft==2) {
-    sprintf(tmp,"/sbin/mkfs.ext4 %s",blockname);
+    sprintf(tmp,"/sbin/mkfs.ext4 -L %s -b 4096 -m 0 -F %s",name,blockname);
     __system(tmp);
   }
 
@@ -560,7 +560,7 @@ int create_lagfix_partition(int id) {
     truncate(tmp,loopsize);
     sprintf(tmp,"losetup /dev/block/loop0 %s/.extfs",looppos);
     __system(tmp);
-    __system("mkfs.ext2 /dev/block/loop0");
+    __system("/sbin/mkfs.ext2 -b 4096 -m -F /dev/block/loop0");
     __system("losetup -d /dev/block/loop0");
     sprintf(tmp,"umount %s",blockname);
     __system(tmp);
