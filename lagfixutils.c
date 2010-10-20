@@ -616,6 +616,12 @@ int do_lagfix() {
   ui_print("Restoring data\n");
   nandroid_restore(tmp,0,0,1,1,0);
 
+  // restore might have brought some .data into dbdata, clear them
+  if (!get_bind_options()) {
+    if (ensure_root_path_mounted("DATADATA:")!=0) return -1;
+    __system("rm -rf /dbdata/.data");
+  }
+
   __system("mount");
   ui_print("Unmounting again to be sure\n");
   sync();
