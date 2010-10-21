@@ -684,6 +684,35 @@ void tweak_menu() {
 
 }
 
+void bln_menu() {
+    static char* headers[] = {  "BackLightNotification Menu",
+                                "",
+                                NULL
+    };
+
+    static char* list[] = { "Turn BLN On",
+                            "Turn BLN Off",
+                            NULL
+    };
+
+    for (;;)
+    {
+        int chosen_item = get_menu_selection(headers, list, 0);
+        if (chosen_item == GO_BACK)
+            break;
+        switch (chosen_item)
+        {
+            case 0:
+              __system("cp /res/misc/lights.s5pc110.so.on /system/lib/hw/lights.s5pc110.so");
+              break;
+            case 1:
+              __system("cp /res/misc/lights.s5pc110.so.off /system/lib/hw/lights.s5pc110.so");
+              break;
+        }
+    }
+
+}
+
 void show_advanced_lfs_menu() {
     static char* headers[] = {  "Universal Lagfix Kernel Menu",
                                 "",
@@ -696,6 +725,7 @@ void show_advanced_lfs_menu() {
                             "Install Superuser",
                             "Lagfix options",
                             "Tweak options",
+                            "BLN options",
                             NULL
     };
 
@@ -740,6 +770,11 @@ void show_advanced_lfs_menu() {
             case 5:
             {
               tweak_menu();
+              break;
+            }
+            case 6:
+            {
+              bln_menu();
               break;
             }
         }
