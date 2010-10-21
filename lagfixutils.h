@@ -19,6 +19,7 @@
 
 #include "roots.h"
 
+void show_advanced_lfs_menu();
 int graphsh_main(int argc, char** argv);
 int truncate_main(int argc, char** argv);
 void apply_root_to_device();

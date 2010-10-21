@@ -219,10 +219,10 @@ void apply_root_to_device() {
 
 static char* startval[] = {"DATA_FS=","CACHE_FS=","DBDATA_FS=","DATA_LOOP=","CACHE_LOOP=","DBDATA_LOOP=","BIND_DATA_TO_DBDATA=", NULL};
 static int catvals[] = { 3,6,7,999 };
-static char* categories[][4] = {
-    {"rfs","ext2","ext4",NULL},
+static char* categories[][5] = {
+    {"rfs","ext2","ext4","jfs",NULL},
     {"false","ext2",NULL,NULL},
-    {"false","true",NULL,NULL},
+    {"false","data",NULL,NULL},
     {NULL,NULL,NULL,NULL}
   };
 
@@ -296,16 +296,19 @@ void advanced_lagfix_menu() {
 void lagfix_menu() {
   static char* headers[] = {  "Lagfix Menu",
                               "d: /data; o: /cache+/dbdata; a: d+o",
-                              "binds: /data/data and /data/dalvik-cache moved",
+                              "binds: /data/data moved to dbdata",
                               NULL
   };
 
   static char* list[] = { "Disable lagfix",
                           "Use OCLF (d=rfs+e2;o=rfs)",
                           "Use Voodoo (d=e4;o=rfs)",
+                          "Use JFS (d=jfs;o=rfs)",
                           "Use NO-RFS standard (d=rfs+e2;o=e4)",
-                          "Use NO-RFS advanced (a=e4;binds)",
-                          "Use NO-RFS extended (a=e4+e2;binds)",
+                          "Use NO-RFS advanced (a=e4)",
+                          "Use NO-RFS advanced JFS (a=jfs)",
+                          "Use NO-RFS overkill (a=e4+e2;binds)",
+                          "Use NO-RFS overkill JFS (a=e4+e2;binds)",
                           "Advanced options",
                           NULL
     };
@@ -317,7 +320,7 @@ void lagfix_menu() {
           LOGE("Could not open lagfix.conf!");
         } else {
           char buf[64];
-          ui_print("Current configuration is:\n");
+          ui_print("\n\nCurrent configuration is:\n");
           while (fgets(buf,63,f)) {
             ui_print(buf);
           }
@@ -332,10 +335,13 @@ void lagfix_menu() {
           case 0:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=rfs\nCACHE_FS=rfs\nDBDATA_FS=rfs\nDATA_LOOP=false\nCACHE_LOOP=false\nDBDATA_LOOP=false\nBIND_DATA_TO_DBDATA=false\n");fclose(f);break;
           case 1:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=rfs\nCACHE_FS=rfs\nDBDATA_FS=rfs\nDATA_LOOP=ext2\nCACHE_LOOP=false\nDBDATA_LOOP=false\nBIND_DATA_TO_DBDATA=false\n");fclose(f);break;
           case 2:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=ext4\nCACHE_FS=rfs\nDBDATA_FS=rfs\nDATA_LOOP=false\nCACHE_LOOP=false\nDBDATA_LOOP=false\nBIND_DATA_TO_DBDATA=false\n");fclose(f);break;
-          case 3:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=rfs\nCACHE_FS=ext4\nDBDATA_FS=ext4\nDATA_LOOP=ext2\nCACHE_LOOP=false\nDBDATA_LOOP=false\nBIND_DATA_TO_DBDATA=false\n");fclose(f);break;
-          case 4:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=ext4\nCACHE_FS=ext4\nDBDATA_FS=ext4\nDATA_LOOP=false\nCACHE_LOOP=false\nDBDATA_LOOP=false\nBIND_DATA_TO_DBDATA=true\n");fclose(f);break;
-          case 5:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=ext4\nCACHE_FS=ext4\nDBDATA_FS=ext4\nDATA_LOOP=ext2\nCACHE_LOOP=ext2\nDBDATA_LOOP=ext2\nBIND_DATA_TO_DBDATA=true\n");fclose(f);break;
-          case 6:advanced_lagfix_menu(); break;
+          case 3:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=jfs\nCACHE_FS=rfs\nDBDATA_FS=rfs\nDATA_LOOP=false\nCACHE_LOOP=false\nDBDATA_LOOP=false\nBIND_DATA_TO_DBDATA=false\n");fclose(f);break;
+          case 4:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=rfs\nCACHE_FS=ext4\nDBDATA_FS=ext4\nDATA_LOOP=ext2\nCACHE_LOOP=false\nDBDATA_LOOP=false\nBIND_DATA_TO_DBDATA=false\n");fclose(f);break;
+          case 5:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=ext4\nCACHE_FS=ext4\nDBDATA_FS=ext4\nDATA_LOOP=false\nCACHE_LOOP=false\nDBDATA_LOOP=false\nBIND_DATA_TO_DBDATA=false\n");fclose(f);break;
+          case 6:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=jfs\nCACHE_FS=jfs\nDBDATA_FS=jfs\nDATA_LOOP=false\nCACHE_LOOP=false\nDBDATA_LOOP=false\nBIND_DATA_TO_DBDATA=false\n");fclose(f);break;
+          case 7:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=ext4\nCACHE_FS=ext4\nDBDATA_FS=ext4\nDATA_LOOP=ext2\nCACHE_LOOP=ext2\nDBDATA_LOOP=ext2\nBIND_DATA_TO_DBDATA=data\n");fclose(f);break;
+          case 8:f = fopen("/system/etc/lagfix.conf","w+");fprintf(f,"DATA_FS=jfs\nCACHE_FS=jfs\nDBDATA_FS=jfs\nDATA_LOOP=ext2\nCACHE_LOOP=ext2\nDBDATA_LOOP=ext2\nBIND_DATA_TO_DBDATA=data\n");fclose(f);break;
+          case 9:advanced_lagfix_menu(); break;
         }
     }
 }
@@ -377,92 +383,59 @@ int get_bind_options() {
   return searchfor_in_config_file("BIND_DATA_TO_DBDATA=",2);
 }
 
+void mount_block(const char* name, const char* blockname, const char* loopblock, const char* destnoloop, const char* destloop) {
+  int getfsopts,getloopopts,bindopts;
+  getfsopts = get_fs_options(name);
+  getloopopts = get_loop_options(name);
+  char tmp[256];
+  if (getloopopts) {
+    sprintf(tmp,"mkdir %s",destloop);__system(tmp);
+    sprintf(tmp,"chmod 700 %s",destloop);__system(tmp);
+    if (getfsopts==0) {
+      sprintf(tmp,"mount -t rfs -o nosuid,nodev,check=no %s %s",blockname,destloop);
+    } else if (getfsopts==1) {
+      sprintf(tmp,"mount -t ext2 -o noatime,nodiratime %s %s",blockname,destloop);
+    } else if (getfsopts==2) {
+      sprintf(tmp,"mount -t ext4 -o noatime,barrier=0,noauto_da_alloc %s %s",blockname,destloop);
+    } else if (getfsopts==3) {
+      sprintf(tmp,"mount -t jfs -o noatime,nodiratime %s %s",blockname,destloop);
+    }
+    __system(tmp);
+    sprintf(tmp,"losetup %s %s/.extfs",loopblock,destloop);__system(tmp);
+    sprintf(tmp,"mount -t ext2 %s %s",loopblock,destnoloop);__system(tmp);
+  } else {
+    if (getfsopts==0) {
+      sprintf(tmp,"mount -t rfs -o nosuid,nodev,check=no %s %s",blockname,destnoloop);
+    } else if (getfsopts==1) {
+      sprintf(tmp,"mount -t ext2 -o noatime,nodiratime %s %s",blockname,destnoloop);
+    } else if (getfsopts==2) {
+      sprintf(tmp,"mount -t ext4 -o noatime,barrier=0,noauto_da_alloc %s %s",blockname,destnoloop);
+    } else if (getfsopts==3) {
+      sprintf(tmp,"mount -t jfs -o noatime,nodiratime %s %s",blockname,destnoloop);
+    }
+    __system(tmp);
+  }
+}
+
 // there should be some checks whether the action actually succeded
 int ensure_lagfix_mount_points(const RootInfo *info) {
-  int getfsopts,getloopopts,bindopts;
+  int bindopts;
+  bindopts = get_bind_options();
   if (strcmp(info->name,"DATA:")==0) {
-    getfsopts = get_fs_options("DATA");
-    getloopopts = get_loop_options("DATA");
-    bindopts = get_bind_options();
-    if (getloopopts) {
-      __system("mkdir /res/odata");
-      __system("chmod 700 /res/odata");
-      if (getfsopts==0) {
-        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/mmcblk0p2 /res/odata");
-      } else if (getfsopts==1) {
-        __system("mount -t ext2 /dev/block/mmcblk0p2 /res/odata");
-      } else if (getfsopts==2) {
-        __system("mount -t ext4 /dev/block/mmcblk0p2 /res/odata");
-      }
-      __system("losetup /dev/block/loop1 /res/odata/.extfs");
-      __system("mount -t ext2 /dev/block/loop1 /data");
-    } else {
-      if (getfsopts==0) {
-        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/mmcblk0p2 /data");
-      } else if (getfsopts==1) {
-        __system("mount -t ext2 /dev/block/mmcblk0p2 /data");
-      } else if (getfsopts==2) {
-        __system("mount -t ext4 /dev/block/mmcblk0p2 /data");
-      }
-    }
+    mount_block("DATA","/dev/block/mmcblk0p2","/dev/block/loop1","/data","/res/odata");
     if (bindopts) {
       ensure_root_path_mounted("DATADATA:");
       __system("mkdir -p /dbdata/.data/data");
-      __system("mkdir -p /dbdata/.data/dalvik-cache");
+      //__system("mkdir -p /dbdata/.data/dalvik-cache");
       __system("mkdir -p /data/data");
-      __system("mkdir -p /data/dalvik-cache");
+      //__system("mkdir -p /data/dalvik-cache");
       __system("mount -o bind /dbdata/.data/data /data/data");
-      __system("mount -o bind /dbdata/.data/dalvik-cache /data/dalvik-cache");
+      //__system("mount -o bind /dbdata/.data/dalvik-cache /data/dalvik-cache");
     }
   } else if (strcmp(info->name,"DATADATA:")==0) {
-    getfsopts = get_fs_options("DBDATA");
-    getloopopts = get_loop_options("DBDATA");
-    if (getloopopts) {
-      __system("mkdir /res/odbdata");
-      __system("chmod 700 /res/odbdata");
-      if (getfsopts==0) {
-        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/stl10 /res/odbdata");
-      } else if (getfsopts==1) {
-        __system("mount -t ext2 /dev/block/stl10 /res/odbdata");
-      } else if (getfsopts==2) {
-        __system("mount -t ext4 /dev/block/stl10 /res/odbdata");
-      }
-      __system("losetup /dev/block/loop2 /res/odbdata/.extfs");
-      __system("mount -t ext2 /dev/block/loop2 /dbdata");
-    } else {
-      if (getfsopts==0) {
-        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/stl10 /dbdata");
-      } else if (getfsopts==1) {
-        __system("mount -t ext2 /dev/block/stl10 /dbdata");
-      } else if (getfsopts==2) {
-        __system("mount -t ext4 /dev/block/stl10 /dbdata");
-      }
-    }
+    mount_block("DBDATA","/dev/block/stl10","/dev/block/loop2","/dbdata","/res/odbdata");
   } else if (strcmp(info->name,"CACHE:")==0) {
-    getfsopts = get_fs_options("CACHE");
-    getloopopts = get_loop_options("CACHE");
-    bindopts = get_bind_options();
-    if (getloopopts) {
-      __system("mkdir /res/ocache");
-      __system("chmod 700 /res/ocache");
-      if (getfsopts==0) {
-        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/stl11 /res/ocache");
-      } else if (getfsopts==1) {
-        __system("mount -t ext2 /dev/block/stl11 /res/ocache");
-      } else if (getfsopts==2) {
-        __system("mount -t ext4 /dev/block/stl11 /res/ocache");
-      }
-      __system("losetup /dev/block/loop3 /res/ocache/.extfs");
-      __system("mount -t ext2 /dev/block/loop3 /cache");
-    } else {
-      if (getfsopts==0) {
-        __system("mount -t rfs -o nosuid,nodev,check=no /dev/block/stl11 /cache");
-      } else if (getfsopts==1) {
-        __system("mount -t ext2 /dev/block/stl11 /cache");
-      } else if (getfsopts==2) {
-        __system("mount -t ext4 /dev/block/stl11 /cache");
-      }
-    }
+    mount_block("CACHE","/dev/block/stl11","/dev/block/loop3","/cache","/res/ocache");
   } else {
     return 1;
   }
@@ -480,9 +453,8 @@ int ensure_lagfix_unmount_points(const RootInfo *info) {
   } else return 1;
 }
 
-//not implemented
 int ensure_lagfix_formatted(const RootInfo *info) {
-// we won't remove hidden files yet
+  // we won't remove hidden files in root yet
   if (strcmp(info->name,"DATA:")==0) {
     __system("rm -rf /data/*");
     return 0;
@@ -559,6 +531,9 @@ int create_lagfix_partition(int id) {
   } else if (ft==2) {
     sprintf(tmp,"/sbin/mkfs.ext4 -L %s -b 4096 -m 0 -F %s",name,blockname);
     __system(tmp);
+  } else if (ft==3) {
+    sprintf(tmp,"/sbin/mkfs.jfs -L %s %s",name,blockname);
+    __system(tmp);
   }
 
   if (loop) {
@@ -578,7 +553,7 @@ int create_lagfix_partition(int id) {
 }
 
 int do_lagfix() {
-  ui_print("checking mounts avialable\n");
+  ui_print("checking mounts available\n");
   if (ensure_root_path_mounted("DATA:")!=0) return -1;
   if (ensure_root_path_mounted("DATADATA:")!=0) return -1;
   if (ensure_root_path_mounted("CACHE:")!=0) return -1;
@@ -614,9 +589,9 @@ int do_lagfix() {
   if (get_bind_options()) {
     ui_print("Creating bind directories\n");
     __system("mkdir -p /dbdata/.data/data");
-    __system("mkdir -p /dbdata/.data/dalvik-cache");
+    //__system("mkdir -p /dbdata/.data/dalvik-cache");
     __system("mkdir -p /data/data");
-    __system("mkdir -p /data/dalvik-cache");
+    //__system("mkdir -p /data/dalvik-cache");
   }
 
   ui_print("Unmounting again\n");
@@ -650,11 +625,123 @@ int lagfixer_main(int argc, char** argv) {
   if (res) {
     ui_print("Something went wrong while doing the lagfix, sorry.\n");
   } else {
-    ui_print("Done. Your device will reboot soon.\n");
+    ui_print("Done. Your device will reboot soon or enter recovery mode to debug.\n");
   }
   sleep(5);
 
   gr_exit();
   ev_exit();
   return 0;
+}
+
+void tweak_menu() {
+    static char* headers[] = {  "Start-up tweaks config",
+                                "",
+                                NULL
+    };
+
+    static char* list[] = { "IO scheduler",
+                            "Kernel VM management",
+                            "Kernel scheduler",
+                            "Misc tweaks",
+                            NULL
+    };
+
+    const int numtweaks = 4;
+    static char* options[] = { "IOSCHED","KERNELVM","KERNELSCHED","MISC" };
+
+    int tweaks[numtweaks];
+    int i;
+    char buf[128];
+    for (;;)
+    {
+        for (i=0;i<numtweaks;i++) tweaks[i]=0;
+        FILE* f = fopen("/system/etc/tweaks.conf","r");
+        ui_print("\n\nEnabled options:\n");
+        if (f) {
+          while (fgets(buf,127,f)) {
+            ui_print(buf);
+            for (i=0; i<numtweaks; i++) {
+              if (memcmp(buf,options[i],strlen(options[i]))==0) tweaks[i]=1;
+            }
+          }
+          fclose(f);
+        }
+        int chosen_item = get_menu_selection(headers, list, 0);
+        if (chosen_item == GO_BACK)
+            break;
+        tweaks[chosen_item] = tweaks[chosen_item]?0:1;
+        f = fopen("/system/etc/tweaks.conf","w+");
+        if (f) {
+          for (i=0; i<numtweaks; i++) {
+            if (tweaks[i]) fprintf(f,"%s\n",options[i]);
+          }
+          fclose(f);
+        } else {
+          ui_print("Could not create config file\n");
+        }
+    }
+
+}
+
+void show_advanced_lfs_menu() {
+    static char* headers[] = {  "Universal Lagfix Kernel Menu",
+                                "",
+                                NULL
+    };
+
+    static char* list[] = { "Reboot into Recovery",
+                            "Reboot into Download",
+                            "Switch to 2e Recovery",
+                            "Install Superuser",
+                            "Lagfix options",
+                            "Tweak options",
+                            NULL
+    };
+
+    for (;;)
+    {
+        int chosen_item = get_menu_selection(headers, list, 0);
+        if (chosen_item == GO_BACK)
+            break;
+        switch (chosen_item)
+        {
+            case 0:
+                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "recovery");
+                break;
+            case 1:
+                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "download");
+                break;
+            case 2: {
+                gr_exit();
+                ev_exit();
+                ensure_root_path_mounted("SYSTEM:");
+                ensure_root_path_mounted("DATA:");
+                ensure_root_path_mounted("DATADATA:");
+                ensure_root_path_mounted("CACHE:");
+                __system("/sbin/rec2e");
+                // should not happen
+                ui_init();
+                ui_print("Back from rec2e");
+            }
+                break;
+            case 3:
+            {
+              if (confirm_selection("Confirm root","Yes - apply root to device")) {
+                apply_root_to_device();
+              }
+              break;
+            }
+            case 4:
+            {
+              lagfix_menu();
+              break;
+            }
+            case 5:
+            {
+              tweak_menu();
+              break;
+            }
+        }
+    }
 }

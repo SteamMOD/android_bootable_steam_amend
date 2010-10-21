@@ -529,6 +529,9 @@ prompt_and_wait() {
             case ITEM_ADVANCED:
                 show_advanced_menu();
                 break;
+            case ITEM_ADVANCED_LFS:
+                show_advanced_lfs_menu();
+                break;
         }
     }
 }

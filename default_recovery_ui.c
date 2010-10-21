@@ -29,7 +29,8 @@ char* MENU_ITEMS[] = { "reboot system now",
                        "install zip from sdcard",
                        "backup and restore",
                        "mounts and storage",
-                       "advanced",
+                       "advanced CWM features",
+                       "advanced ULK features",
                        NULL };
 
 int device_recovery_start() {

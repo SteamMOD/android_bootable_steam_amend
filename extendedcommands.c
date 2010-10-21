@@ -804,9 +804,6 @@ void show_advanced_menu()
                             "Partition SD Card",
                             "Fix Permissions",
 #endif
-                            "Install Superuser",
-                            "Lagfix options",
-                            "Reboot into Download",
                             NULL
     };
 
@@ -908,23 +905,6 @@ void show_advanced_menu()
                 __system("fix_permissions");
                 ui_print("Done!\n");
                 break;
-            }
-            case 7:
-            {
-              if (confirm_selection("Confirm root","Yes - apply root to device")) {
-                apply_root_to_device();
-              }
-              break;
-            }
-            case 8:
-            {
-              lagfix_menu();
-              break;
-            }
-            case 9:
-            {
-              __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "download");
-              break;
             }
         }
     }

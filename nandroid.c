@@ -164,8 +164,8 @@ int nandroid_backup_flags(const char* backup_path, int flags)
 #endif
 
     if (!(flags & DONT_BACKUP_SYSTEM)) {
-    if (0 != (ret = nandroid_backup_partition(backup_path, "SYSTEM:")))
-        return ret;
+      if (0 != (ret = nandroid_backup_partition(backup_path, "SYSTEM:")))
+          return ret;
     }
 
     if (0 != (ret = nandroid_backup_partition(backup_path, "DATA:")))
@@ -177,32 +177,36 @@ int nandroid_backup_flags(const char* backup_path, int flags)
 #endif
 
     struct stat st;
-    if (0 != stat("/mnt/sdcard/.android_secure", &st))
-    {
-        ui_print("No /mnt/sdcard/.android_secure found. Skipping backup of applications on external storage.\n");
-    }
-    else
-    {
-        if (0 != (ret = nandroid_backup_partition_extended(backup_path, "SDCARD:/.android_secure", 0)))
-            return ret;
+    if (!(flags & DONT_BACKUP_SYSTEM)) {
+      if (0 != stat("/mnt/sdcard/.android_secure", &st))
+      {
+          ui_print("No /mnt/sdcard/.android_secure found. Skipping backup of applications on external storage.\n");
+      }
+      else
+      {
+          if (0 != (ret = nandroid_backup_partition_extended(backup_path, "SDCARD:/.android_secure", 0)))
+              return ret;
+      }
     }
 
     if (0 != (ret = nandroid_backup_partition_extended(backup_path, "CACHE:", 0)))
         return ret;
 
-    if (0 != (ret = nandroid_backup_partition_extended(backup_path, "EFS:", 0)))
-        return ret;
+    if (!(flags & DONT_BACKUP_SYSTEM)) {
+      if (0 != (ret = nandroid_backup_partition_extended(backup_path, "EFS:", 0)))
+          return ret;
 
-    if (0 != stat(SDEXT_DEVICE, &st))
-    {
-        ui_print("No sd-ext found. Skipping backup of sd-ext.\n");
-    }
-    else
-    {
-        if (0 != ensure_root_path_mounted("SDEXT:"))
-            ui_print("Could not mount sd-ext. sd-ext backup may not be supported on this device. Skipping backup of sd-ext.\n");
-        else if (0 != (ret = nandroid_backup_partition(backup_path, "SDEXT:")))
-            return ret;
+      if (0 != stat(SDEXT_DEVICE, &st))
+      {
+          ui_print("No sd-ext found. Skipping backup of sd-ext.\n");
+      }
+      else
+      {
+          if (0 != ensure_root_path_mounted("SDEXT:"))
+              ui_print("Could not mount sd-ext. sd-ext backup may not be supported on this device. Skipping backup of sd-ext.\n");
+          else if (0 != (ret = nandroid_backup_partition(backup_path, "SDEXT:")))
+              return ret;
+      }
     }
 
     ui_print("Generating md5 sum...\n");
