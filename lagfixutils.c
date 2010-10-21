@@ -220,7 +220,7 @@ void apply_root_to_device() {
 static char* startval[] = {"DATA_FS=","CACHE_FS=","DBDATA_FS=","DATA_LOOP=","CACHE_LOOP=","DBDATA_LOOP=","BIND_DATA_TO_DBDATA=", NULL};
 static int catvals[] = { 3,6,7,999 };
 static char* categories[][5] = {
-    {"rfs","ext2","ext4","jfs",NULL},
+    {"rfs","jfs","ext4",NULL,NULL},
     {"false","ext2",NULL,NULL},
     {"false","data",NULL,NULL},
     {NULL,NULL,NULL,NULL}
@@ -394,11 +394,11 @@ void mount_block(const char* name, const char* blockname, const char* loopblock,
     if (getfsopts==0) {
       sprintf(tmp,"mount -t rfs -o nosuid,nodev,check=no %s %s",blockname,destloop);
     } else if (getfsopts==1) {
-      sprintf(tmp,"mount -t ext2 -o noatime,nodiratime %s %s",blockname,destloop);
+      sprintf(tmp,"mount -t jfs -o noatime,nodiratime %s %s",blockname,destloop);
     } else if (getfsopts==2) {
       sprintf(tmp,"mount -t ext4 -o noatime,barrier=0,noauto_da_alloc %s %s",blockname,destloop);
     } else if (getfsopts==3) {
-      sprintf(tmp,"mount -t jfs -o noatime,nodiratime %s %s",blockname,destloop);
+      sprintf(tmp,"mount -t ext2 -o noatime,nodiratime %s %s",blockname,destloop);
     }
     __system(tmp);
     sprintf(tmp,"losetup %s %s/.extfs",loopblock,destloop);__system(tmp);
@@ -407,11 +407,11 @@ void mount_block(const char* name, const char* blockname, const char* loopblock,
     if (getfsopts==0) {
       sprintf(tmp,"mount -t rfs -o nosuid,nodev,check=no %s %s",blockname,destnoloop);
     } else if (getfsopts==1) {
-      sprintf(tmp,"mount -t ext2 -o noatime,nodiratime %s %s",blockname,destnoloop);
+      sprintf(tmp,"mount -t jfs -o noatime,nodiratime %s %s",blockname,destnoloop);
     } else if (getfsopts==2) {
       sprintf(tmp,"mount -t ext4 -o noatime,barrier=0,noauto_da_alloc %s %s",blockname,destnoloop);
     } else if (getfsopts==3) {
-      sprintf(tmp,"mount -t jfs -o noatime,nodiratime %s %s",blockname,destnoloop);
+      sprintf(tmp,"mount -t ext2 -o noatime,nodiratime %s %s",blockname,destnoloop);
     }
     __system(tmp);
   }
@@ -526,13 +526,13 @@ int create_lagfix_partition(int id) {
     }
     __system(tmp);
   } else if (ft==1) {
-    sprintf(tmp,"/sbin/mkfs.ext2 -L %s -b 4096 -m 0 -F %s",name,blockname);
+    sprintf(tmp,"/sbin/mkfs.jfs -L %s %s",name,blockname);
     __system(tmp);
   } else if (ft==2) {
     sprintf(tmp,"/sbin/mkfs.ext4 -L %s -b 4096 -m 0 -F %s",name,blockname);
     __system(tmp);
   } else if (ft==3) {
-    sprintf(tmp,"/sbin/mkfs.jfs -L %s %s",name,blockname);
+    sprintf(tmp,"/sbin/mkfs.ext2 -L %s -b 4096 -m 0 -F %s",name,blockname);
     __system(tmp);
   }
 
