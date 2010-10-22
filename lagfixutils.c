@@ -507,12 +507,17 @@ int ensure_lagfix_formatted(const RootInfo *info) {
   // we won't remove hidden files in root yet
   if (strcmp(info->name,"DATA:")==0) {
     __system("rm -rf /data/*");
+    __system("rm -rf /data/.*");
     return 0;
   } else if (strcmp(info->name,"DATADATA:")==0) {
     __system("rm -rf /dbdata/*");
+    if (!get_bind_options()) {
+      __system("rm -rf /dbdata/.*");
+    }
     return 0;
   } else if (strcmp(info->name,"CACHE:")==0) {
     __system("rm -rf /cache/*");
+    __system("rm -rf /cache/.*");
     return 0;
   } else return 1;
 }
@@ -626,8 +631,12 @@ int do_lagfix(int do_fr) {
 
   char tmp[PATH_MAX];
   nandroid_generate_timestamp_path(tmp);
-  ui_print("Creating a nandroid backup at %s\n",tmp);
-  if (nandroid_backup_flags(tmp,DONT_BACKUP_SYSTEM)!=0) return -1;
+  if (do_fr!=2) {
+    ui_print("Creating a nandroid backup at %s\n",tmp);
+    if (nandroid_backup_flags(tmp,DONT_BACKUP_SYSTEM)!=0) return -1;
+  } else {
+    ui_print("Not creating a backup\n");
+  }
 
   ui_print("Backup completed, recreating file systems\n");
 
@@ -688,11 +697,13 @@ int lagfixer_main(int argc, char** argv) {
   ui_set_show_text(1);
 
   int res;
+  int opts = 0;
   if ((argc>=2)&&(strcmp(argv[1],"fr")==0)) {
-    res = do_lagfix(1);
-  } else {
-    res = do_lagfix(0);
+    opts=2;
+  } else if ((argc>=2)&&(strcmp(argv[1],"b")==0)) {
+    opts=1;
   }
+  res = do_lagfix(opts);
   if (res) {
     ui_print("Something went wrong while doing the lagfix, sorry.\n");
   } else {
@@ -837,6 +848,7 @@ void show_advanced_lfs_menu() {
                             "Lagfix options",
                             "Tweak options",
                             "BLN options",
+                            "Set default permissions",
                             NULL
     };
 
@@ -896,6 +908,18 @@ void show_advanced_lfs_menu() {
               {
                 bln_menu();
                 break;
+              }
+              case 7:
+              {
+                if (confirm_selection("Confirm setting permissions","Yes - run fix_permissions_sgs")) {
+                  ensure_root_path_mounted("SYSTEM:");
+                  ensure_root_path_mounted("DATA:");
+                  ensure_root_path_mounted("DATADATA:");
+                  ensure_root_path_mounted("CACHE:");
+                  ui_print("Starting fixing\n");
+                  __system("/sbin/fix_permissions_sgs");
+                  ui_print("Done\n");
+                }
               }
           }
       }
