@@ -74,3 +74,41 @@ int graphsh_main(int argc, char** argv) {
   }
 }
 
+
+extern char **environ;
+// runs the program and redirects it's output to the screen using ui_print
+int graphchoice_main(int argc, char** argv) {
+  if (argc>=2) {
+    ui_init();
+    ui_print(EXPAND(RECOVERY_VERSION)" - choice app\n");
+    ui_set_show_text(1);
+    ui_reset_progress();
+    ui_clear_key_queue();
+    char** headers;
+    char** list;
+    headers = malloc(sizeof(char*)*3);
+    headers[0] = argv[1];
+    headers[1] = "";
+    headers[2] = NULL;
+    list = malloc(sizeof(char*)*(argc+2));
+    list[0] = NULL;
+    list[1] = NULL;
+    int i=2;
+    while (argv[i]) {
+      list[i-2] = argv[i];
+      list[i-1] = NULL;
+      i++;
+    }
+    int chosen_item = GO_BACK;
+    while (chosen_item == GO_BACK) {
+      chosen_item = get_menu_selection(headers,list,0);
+    }
+    gr_exit();
+    ev_exit();
+    return chosen_item;
+  } else {
+    printf("Usage: graphchoice question [option1] [option2] [option3] [...].\n");
+    return -1;
+  }
+}
+

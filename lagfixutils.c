@@ -44,7 +44,19 @@
 
 extern char **environ;
 
-void apply_root_to_device() {
+void apply_ln(char* name) {
+  char tmp[128];
+  sprintf(tmp,"ln -s /system/xbin/busybox /system/xbin/%s",name);
+  __system(tmp);
+}
+
+void apply_rm(char* name) {
+  char tmp[128];
+  sprintf(tmp,"/system/xbin/rm /system/bin/%s",name);
+  __system(tmp);
+}
+
+void apply_root_to_device(int mode) {
   ensure_root_path_mounted("SYSTEM:");
   ui_print("Copying Superuser and Busybox files to /system/xbin\n");
 
@@ -69,151 +81,185 @@ void apply_root_to_device() {
   __system("chmod 755 /system/xbin/busybox");
 
   ui_print("Creating symlinks to commands\n");
-  __system("ln -s /system/xbin/busybox /system/xbin/[");
-  __system("ln -s /system/xbin/busybox /system/xbin/[[");
-  __system("ln -s /system/xbin/busybox /system/xbin/ash");
-  __system("ln -s /system/xbin/busybox /system/xbin/awk");
-  __system("ln -s /system/xbin/busybox /system/xbin/basename");
-  __system("ln -s /system/xbin/busybox /system/xbin/bbconfig");
-  __system("ln -s /system/xbin/busybox /system/xbin/bunzip2");
-  __system("ln -s /system/xbin/busybox /system/xbin/bzcat");
-  __system("ln -s /system/xbin/busybox /system/xbin/bzip2");
-  __system("ln -s /system/xbin/busybox /system/xbin/cal");
-  __system("ln -s /system/xbin/busybox /system/xbin/cat");
-  __system("ln -s /system/xbin/busybox /system/xbin/catv");
-  __system("ln -s /system/xbin/busybox /system/xbin/chgrp");
-  __system("ln -s /system/xbin/busybox /system/xbin/chmod");
-  __system("ln -s /system/xbin/busybox /system/xbin/chown");
-  __system("ln -s /system/xbin/busybox /system/xbin/chroot");
-  __system("ln -s /system/xbin/busybox /system/xbin/cksum");
-  __system("ln -s /system/xbin/busybox /system/xbin/clear");
-  __system("ln -s /system/xbin/busybox /system/xbin/cmp");
-  __system("ln -s /system/xbin/busybox /system/xbin/cp");
-  __system("ln -s /system/xbin/busybox /system/xbin/cpio");
-  __system("ln -s /system/xbin/busybox /system/xbin/cut");
-  __system("ln -s /system/xbin/busybox /system/xbin/date");
-  __system("ln -s /system/xbin/busybox /system/xbin/dc");
-  __system("ln -s /system/xbin/busybox /system/xbin/dd");
-  __system("ln -s /system/xbin/busybox /system/xbin/depmod");
-  __system("ln -s /system/xbin/busybox /system/xbin/devmem");
-  __system("ln -s /system/xbin/busybox /system/xbin/df");
-  __system("ln -s /system/xbin/busybox /system/xbin/diff");
-  __system("ln -s /system/xbin/busybox /system/xbin/dirname");
-  __system("ln -s /system/xbin/busybox /system/xbin/dmesg");
-  __system("ln -s /system/xbin/busybox /system/xbin/dos2unix");
-  __system("ln -s /system/xbin/busybox /system/xbin/du");
-  __system("ln -s /system/xbin/busybox /system/xbin/echo");
-  __system("ln -s /system/xbin/busybox /system/xbin/egrep");
-  __system("ln -s /system/xbin/busybox /system/xbin/env");
-  __system("ln -s /system/xbin/busybox /system/xbin/expr");
-  __system("ln -s /system/xbin/busybox /system/xbin/false");
-  __system("ln -s /system/xbin/busybox /system/xbin/fdisk");
-  __system("ln -s /system/xbin/busybox /system/xbin/fgrep");
-  __system("ln -s /system/xbin/busybox /system/xbin/find");
-  __system("ln -s /system/xbin/busybox /system/xbin/fold");
-  __system("ln -s /system/xbin/busybox /system/xbin/free");
-  __system("ln -s /system/xbin/busybox /system/xbin/freeramdisk");
-  __system("ln -s /system/xbin/busybox /system/xbin/fuser");
-  __system("ln -s /system/xbin/busybox /system/xbin/getopt");
-  __system("ln -s /system/xbin/busybox /system/xbin/grep");
-  __system("ln -s /system/xbin/busybox /system/xbin/gunzip");
-  __system("ln -s /system/xbin/busybox /system/xbin/gzip");
-  __system("ln -s /system/xbin/busybox /system/xbin/head");
-  __system("ln -s /system/xbin/busybox /system/xbin/hexdump");
-  __system("ln -s /system/xbin/busybox /system/xbin/id");
-  __system("ln -s /system/xbin/busybox /system/xbin/insmod");
-  __system("ln -s /system/xbin/busybox /system/xbin/install");
-  __system("ln -s /system/xbin/busybox /system/xbin/kill");
-  __system("ln -s /system/xbin/busybox /system/xbin/killall");
-  __system("ln -s /system/xbin/busybox /system/xbin/killall5");
-  __system("ln -s /system/xbin/busybox /system/xbin/length");
-  __system("ln -s /system/xbin/busybox /system/xbin/less");
-  __system("ln -s /system/xbin/busybox /system/xbin/ln");
-  __system("ln -s /system/xbin/busybox /system/xbin/losetup");
-  __system("ln -s /system/xbin/busybox /system/xbin/ls");
-  __system("ln -s /system/xbin/busybox /system/xbin/lsmod");
-  __system("ln -s /system/xbin/busybox /system/xbin/lspci");
-  __system("ln -s /system/xbin/busybox /system/xbin/lsusb");
-  __system("ln -s /system/xbin/busybox /system/xbin/lzop");
-  __system("ln -s /system/xbin/busybox /system/xbin/lzopcat");
-  __system("ln -s /system/xbin/busybox /system/xbin/md5sum");
-  __system("ln -s /system/xbin/busybox /system/xbin/mkdir");
-  __system("ln -s /system/xbin/busybox /system/xbin/mke2fs");
-  __system("ln -s /system/xbin/busybox /system/xbin/mkfifo");
-  __system("ln -s /system/xbin/busybox /system/xbin/mkfs.ext2");
-  __system("ln -s /system/xbin/busybox /system/xbin/mknod");
-  __system("ln -s /system/xbin/busybox /system/xbin/mkswap");
-  __system("ln -s /system/xbin/busybox /system/xbin/mktemp");
-  __system("ln -s /system/xbin/busybox /system/xbin/modprobe");
-  __system("ln -s /system/xbin/busybox /system/xbin/more");
-  __system("ln -s /system/xbin/busybox /system/xbin/mount");
-  __system("ln -s /system/xbin/busybox /system/xbin/mountpoint");
-  __system("ln -s /system/xbin/busybox /system/xbin/mv");
-  __system("ln -s /system/xbin/busybox /system/xbin/nice");
-  __system("ln -s /system/xbin/busybox /system/xbin/nohup");
-  __system("ln -s /system/xbin/busybox /system/xbin/od");
-  __system("ln -s /system/xbin/busybox /system/xbin/patch");
-  __system("ln -s /system/xbin/busybox /system/xbin/pgrep");
-  __system("ln -s /system/xbin/busybox /system/xbin/pidof");
-  __system("ln -s /system/xbin/busybox /system/xbin/pkill");
-  __system("ln -s /system/xbin/busybox /system/xbin/printenv");
-  __system("ln -s /system/xbin/busybox /system/xbin/printf");
-  __system("ln -s /system/xbin/busybox /system/xbin/ps");
-  __system("ln -s /system/xbin/busybox /system/xbin/pwd");
-  __system("ln -s /system/xbin/busybox /system/xbin/rdev");
-  __system("ln -s /system/xbin/busybox /system/xbin/readlink");
-  __system("ln -s /system/xbin/busybox /system/xbin/realpath");
-  __system("ln -s /system/xbin/busybox /system/xbin/renice");
-  __system("ln -s /system/xbin/busybox /system/xbin/reset");
-  __system("ln -s /system/xbin/busybox /system/xbin/rm");
-  __system("ln -s /system/xbin/busybox /system/xbin/rmdir");
-  __system("ln -s /system/xbin/busybox /system/xbin/rmmod");
-  __system("ln -s /system/xbin/busybox /system/xbin/run-parts");
-  __system("ln -s /system/xbin/busybox /system/xbin/sed");
-  __system("ln -s /system/xbin/busybox /system/xbin/seq");
-  __system("ln -s /system/xbin/busybox /system/xbin/setsid");
-  __system("ln -s /system/xbin/busybox /system/xbin/sh");
-  __system("ln -s /system/xbin/busybox /system/xbin/sha1sum");
-  __system("ln -s /system/xbin/busybox /system/xbin/sha256sum");
-  __system("ln -s /system/xbin/busybox /system/xbin/sha512sum");
-  __system("ln -s /system/xbin/busybox /system/xbin/sleep");
-  __system("ln -s /system/xbin/busybox /system/xbin/sort");
-  __system("ln -s /system/xbin/busybox /system/xbin/split");
-  __system("ln -s /system/xbin/busybox /system/xbin/stat");
-  __system("ln -s /system/xbin/busybox /system/xbin/strings");
-  __system("ln -s /system/xbin/busybox /system/xbin/stty");
-  __system("ln -s /system/xbin/busybox /system/xbin/swapoff");
-  __system("ln -s /system/xbin/busybox /system/xbin/swapon");
-  __system("ln -s /system/xbin/busybox /system/xbin/sync");
-  __system("ln -s /system/xbin/busybox /system/xbin/sysctl");
-  __system("ln -s /system/xbin/busybox /system/xbin/tac");
-  __system("ln -s /system/xbin/busybox /system/xbin/tail");
-  __system("ln -s /system/xbin/busybox /system/xbin/tar");
-  __system("ln -s /system/xbin/busybox /system/xbin/tee");
-  __system("ln -s /system/xbin/busybox /system/xbin/test");
-  __system("ln -s /system/xbin/busybox /system/xbin/time");
-  __system("ln -s /system/xbin/busybox /system/xbin/top");
-  __system("ln -s /system/xbin/busybox /system/xbin/touch");
-  __system("ln -s /system/xbin/busybox /system/xbin/tr");
-  __system("ln -s /system/xbin/busybox /system/xbin/true");
-  __system("ln -s /system/xbin/busybox /system/xbin/tty");
-  __system("ln -s /system/xbin/busybox /system/xbin/umount");
-  __system("ln -s /system/xbin/busybox /system/xbin/uname");
-  __system("ln -s /system/xbin/busybox /system/xbin/uniq");
-  __system("ln -s /system/xbin/busybox /system/xbin/unix2dos");
-  __system("ln -s /system/xbin/busybox /system/xbin/unlzop");
-  __system("ln -s /system/xbin/busybox /system/xbin/unzip");
-  __system("ln -s /system/xbin/busybox /system/xbin/uptime");
-  __system("ln -s /system/xbin/busybox /system/xbin/usleep");
-  __system("ln -s /system/xbin/busybox /system/xbin/uudecode");
-  __system("ln -s /system/xbin/busybox /system/xbin/uuencode");
-  __system("ln -s /system/xbin/busybox /system/xbin/watch");
-  __system("ln -s /system/xbin/busybox /system/xbin/wc");
-  __system("ln -s /system/xbin/busybox /system/xbin/which");
-  __system("ln -s /system/xbin/busybox /system/xbin/whoami");
-  __system("ln -s /system/xbin/busybox /system/xbin/xargs");
-  __system("ln -s /system/xbin/busybox /system/xbin/yes");
-  __system("ln -s /system/xbin/busybox /system/xbin/zcat");
+
+  apply_ln("[");
+  apply_ln("[[");
+  apply_ln("ash");
+  apply_ln("awk");
+  apply_ln("basename");
+  apply_ln("bbconfig");
+  apply_ln("bunzip2");
+  apply_ln("bzcat");
+  apply_ln("bzip2");
+  apply_ln("cal");
+  apply_ln("cat");
+  apply_ln("catv");
+  apply_ln("chgrp");
+  apply_ln("chmod");
+  apply_ln("chown");
+  apply_ln("chroot");
+  apply_ln("cksum");
+  apply_ln("clear");
+  apply_ln("cmp");
+  apply_ln("cp");
+  apply_ln("cpio");
+  apply_ln("cut");
+  apply_ln("date");
+  apply_ln("dc");
+  apply_ln("dd");
+  apply_ln("depmod");
+  apply_ln("devmem");
+  apply_ln("df");
+  apply_ln("diff");
+  apply_ln("dirname");
+  apply_ln("dmesg");
+  apply_ln("dos2unix");
+  apply_ln("du");
+  apply_ln("echo");
+  apply_ln("egrep");
+  apply_ln("env");
+  apply_ln("expr");
+  apply_ln("false");
+  apply_ln("fdisk");
+  apply_ln("fgrep");
+  apply_ln("find");
+  apply_ln("fold");
+  apply_ln("free");
+  apply_ln("freeramdisk");
+  apply_ln("fuser");
+  apply_ln("getopt");
+  apply_ln("grep");
+  apply_ln("gunzip");
+  apply_ln("gzip");
+  apply_ln("head");
+  apply_ln("hexdump");
+  apply_ln("id");
+  apply_ln("insmod");
+  apply_ln("install");
+  apply_ln("kill");
+  apply_ln("killall");
+  apply_ln("killall5");
+  apply_ln("length");
+  apply_ln("less");
+  apply_ln("ln");
+  apply_ln("losetup");
+  apply_ln("ls");
+  apply_ln("lsmod");
+  apply_ln("lspci");
+  apply_ln("lsusb");
+  apply_ln("lzop");
+  apply_ln("lzopcat");
+  apply_ln("md5sum");
+  apply_ln("mkdir");
+  apply_ln("mke2fs");
+  apply_ln("mkfifo");
+  apply_ln("mkfs.ext2");
+  apply_ln("mknod");
+  apply_ln("mkswap");
+  apply_ln("mktemp");
+  apply_ln("modprobe");
+  apply_ln("more");
+  apply_ln("mount");
+  apply_ln("mountpoint");
+  apply_ln("mv");
+  apply_ln("nice");
+  apply_ln("nohup");
+  apply_ln("od");
+  apply_ln("patch");
+  apply_ln("pgrep");
+  apply_ln("pidof");
+  apply_ln("pkill");
+  apply_ln("printenv");
+  apply_ln("printf");
+  apply_ln("ps");
+  apply_ln("pwd");
+  apply_ln("rdev");
+  apply_ln("readlink");
+  apply_ln("realpath");
+  apply_ln("renice");
+  apply_ln("reset");
+  apply_ln("rm");
+  apply_ln("rmdir");
+  apply_ln("rmmod");
+  apply_ln("run-parts");
+  apply_ln("sed");
+  apply_ln("seq");
+  apply_ln("setsid");
+  apply_ln("sh");
+  apply_ln("sha1sum");
+  apply_ln("sha256sum");
+  apply_ln("sha512sum");
+  apply_ln("sleep");
+  apply_ln("sort");
+  apply_ln("split");
+  apply_ln("stat");
+  apply_ln("strings");
+  apply_ln("stty");
+  apply_ln("swapoff");
+  apply_ln("swapon");
+  apply_ln("sync");
+  apply_ln("sysctl");
+  apply_ln("tac");
+  apply_ln("tail");
+  apply_ln("tar");
+  apply_ln("tee");
+  apply_ln("test");
+  apply_ln("time");
+  apply_ln("top");
+  apply_ln("touch");
+  apply_ln("tr");
+  apply_ln("true");
+  apply_ln("tty");
+  apply_ln("umount");
+  apply_ln("uname");
+  apply_ln("uniq");
+  apply_ln("unix2dos");
+  apply_ln("unlzop");
+  apply_ln("unzip");
+  apply_ln("uptime");
+  apply_ln("usleep");
+  apply_ln("uudecode");
+  apply_ln("uuencode");
+  apply_ln("watch");
+  apply_ln("wc");
+  apply_ln("which");
+  apply_ln("whoami");
+  apply_ln("xargs");
+  apply_ln("yes");
+  apply_ln("zcat");
+
+  if (mode>0) {
+    ui_print("Removing some toolbox commands");
+    apply_rm("cat");
+    apply_rm("chmod");
+    apply_rm("chown");
+    apply_rm("dd");
+    apply_rm("ln");
+    apply_rm("ls");
+    apply_rm("mkdir");
+    apply_rm("mv");
+    apply_rm("rm");
+    apply_rm("rmdir");
+    if (mode>1) {
+      ui_print("Removing even more toolbox commands");
+      apply_rm("cmp");
+      apply_rm("date");
+      apply_rm("df");
+      apply_rm("dmesg");
+      apply_rm("id");
+      apply_rm("insmod");
+      apply_rm("kill");
+      apply_rm("lsmod");
+      apply_rm("mount");
+      apply_rm("printenv");
+      apply_rm("ps");
+      apply_rm("renice");
+      apply_rm("sleep");
+      apply_rm("sync");
+      apply_rm("top");
+      apply_rm("umount");
+    }
+  }
   ui_print("Done!\n");
 }
 
@@ -362,7 +408,6 @@ int searchfor_in_config_file(const char* searchfor, int category) {
   }
   fclose(f);
   return res;
-
 }
 
 int get_loop_options(const char * name) {
@@ -388,7 +433,7 @@ void mount_block(const char* name, const char* blockname, const char* loopblock,
   getfsopts = get_fs_options(name);
   getloopopts = get_loop_options(name);
   char tmp[256];
-  if (getloopopts) {
+  if (getloopopts>0) {
     sprintf(tmp,"mkdir %s",destloop);__system(tmp);
     sprintf(tmp,"chmod 700 %s",destloop);__system(tmp);
     if (getfsopts==0) {
@@ -399,6 +444,10 @@ void mount_block(const char* name, const char* blockname, const char* loopblock,
       sprintf(tmp,"mount -t ext4 -o noatime,barrier=0,noauto_da_alloc %s %s",blockname,destloop);
     } else if (getfsopts==3) {
       sprintf(tmp,"mount -t ext2 -o noatime,nodiratime %s %s",blockname,destloop);
+    } else if (getfsopts==-1) {
+      // rfs can't autodetect itself
+      sprintf(tmp,"mount -t rfs -o nosuid,nodev,check=no %s %s",blockname,destnoloop);
+      sprintf(tmp,"mount %s %s",blockname,destloop);
     }
     __system(tmp);
     sprintf(tmp,"losetup %s %s/.extfs",loopblock,destloop);__system(tmp);
@@ -412,6 +461,10 @@ void mount_block(const char* name, const char* blockname, const char* loopblock,
       sprintf(tmp,"mount -t ext4 -o noatime,barrier=0,noauto_da_alloc %s %s",blockname,destnoloop);
     } else if (getfsopts==3) {
       sprintf(tmp,"mount -t ext2 -o noatime,nodiratime %s %s",blockname,destnoloop);
+    } else if (getfsopts==-1) {
+      // rfs can't autodetect itself
+      sprintf(tmp,"mount -t rfs -o nosuid,nodev,check=no %s %s",blockname,destnoloop);
+      sprintf(tmp,"mount %s %s",blockname,destnoloop);
     }
     __system(tmp);
   }
@@ -423,14 +476,11 @@ int ensure_lagfix_mount_points(const RootInfo *info) {
   bindopts = get_bind_options();
   if (strcmp(info->name,"DATA:")==0) {
     mount_block("DATA","/dev/block/mmcblk0p2","/dev/block/loop1","/data","/res/odata");
-    if (bindopts) {
+    if (bindopts>0) {
       ensure_root_path_mounted("DATADATA:");
       __system("mkdir -p /dbdata/.data/data");
-      //__system("mkdir -p /dbdata/.data/dalvik-cache");
       __system("mkdir -p /data/data");
-      //__system("mkdir -p /data/dalvik-cache");
       __system("mount -o bind /dbdata/.data/data /data/data");
-      //__system("mount -o bind /dbdata/.data/dalvik-cache /data/dalvik-cache");
     }
   } else if (strcmp(info->name,"DATADATA:")==0) {
     mount_block("DBDATA","/dev/block/stl10","/dev/block/loop2","/dbdata","/res/odbdata");
@@ -552,7 +602,22 @@ int create_lagfix_partition(int id) {
   return 0;
 }
 
-int do_lagfix() {
+void ui_print_file(char* name) {
+  FILE *f = fopen(name,"r");
+  char tmp[64];
+  if (f) {
+    while (fgets(tmp,63,f)) {
+      ui_print(tmp);
+    }
+    fclose(f);
+  }
+}
+
+int do_lagfix(int do_fr) {
+  ui_print("old config was:\n");
+  ui_print_file("/system/etc/lagfix.conf.old");
+  ui_print("new config is:\n");
+  ui_print_file("/system/etc/lagfix.conf");
   ui_print("checking mounts available\n");
   if (ensure_root_path_mounted("DATA:")!=0) return -1;
   if (ensure_root_path_mounted("DATADATA:")!=0) return -1;
@@ -589,21 +654,22 @@ int do_lagfix() {
   if (get_bind_options()) {
     ui_print("Creating bind directories\n");
     __system("mkdir -p /dbdata/.data/data");
-    //__system("mkdir -p /dbdata/.data/dalvik-cache");
     __system("mkdir -p /data/data");
-    //__system("mkdir -p /data/dalvik-cache");
   }
 
   ui_print("Unmounting again\n");
   unmount_all_lagfixed();
 
-  ui_print("Restoring data\n");
-  nandroid_restore(tmp,0,0,1,1,0);
-
-  // restore might have brought some .data into dbdata, clear them
-  if (!get_bind_options()) {
-    if (ensure_root_path_mounted("DATADATA:")!=0) return -1;
-    __system("rm -rf /dbdata/.data");
+  if (do_fr) {
+    ui_print("Factory reset was requested, not restoring backed up data\n");
+  } else {
+    ui_print("Restoring data\n");
+    nandroid_restore(tmp,0,0,1,1,0);
+    // restore might have brought some .data into dbdata, clear them
+    if (!get_bind_options()) {
+      if (ensure_root_path_mounted("DATADATA:")!=0) return -1;
+      __system("rm -rf /dbdata/.data");
+    }
   }
 
   __system("mount");
@@ -621,7 +687,12 @@ int lagfixer_main(int argc, char** argv) {
   create_fstab();
   ui_set_show_text(1);
 
-  int res = do_lagfix();
+  int res;
+  if ((argc>=2)&&(strcmp(argv[1],"fr")==0)) {
+    res = do_lagfix(1);
+  } else {
+    res = do_lagfix(0);
+  }
   if (res) {
     ui_print("Something went wrong while doing the lagfix, sorry.\n");
   } else {
@@ -713,6 +784,46 @@ void bln_menu() {
 
 }
 
+void apply_root_menu() {
+    static char* headers[] = {  "Install superuser",
+                                "",
+                                NULL
+    };
+
+    static char* list[] = { "Simple: install busybox+su",
+                            "Adv: also rm some toolbox cmds",
+                            "Ext: also rm most toolbox cmds",
+                            NULL
+    };
+
+    for (;;)
+    {
+        int chosen_item = get_menu_selection(headers, list, 0);
+        if (chosen_item == GO_BACK)
+            break;
+        switch (chosen_item)
+        {
+            case 0:
+              if (confirm_selection("Confirm root","Yes - apply root to device")) {
+                apply_root_to_device(0);
+              }
+              break;
+            case 1:
+              if (confirm_selection("Confirm root","Yes - apply root to device")) {
+                apply_root_to_device(1);
+              }
+              break;
+            case 2:
+              if (confirm_selection("Confirm root","Yes - apply root to device")) {
+                apply_root_to_device(2);
+              }
+              break;
+        }
+    }
+
+}
+
+
 void show_advanced_lfs_menu() {
     static char* headers[] = {  "Universal Lagfix Kernel Menu",
                                 "",
@@ -729,54 +840,64 @@ void show_advanced_lfs_menu() {
                             NULL
     };
 
-    for (;;)
-    {
-        int chosen_item = get_menu_selection(headers, list, 0);
-        if (chosen_item == GO_BACK)
-            break;
-        switch (chosen_item)
-        {
-            case 0:
-                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "recovery");
-                break;
-            case 1:
-                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "download");
-                break;
-            case 2: {
-                gr_exit();
-                ev_exit();
-                ensure_root_path_mounted("SYSTEM:");
-                ensure_root_path_mounted("DATA:");
-                ensure_root_path_mounted("DATADATA:");
-                ensure_root_path_mounted("CACHE:");
-                __system("/sbin/rec2e");
-                // should not happen
-                ui_init();
-                ui_print("Back from rec2e");
-            }
-                break;
-            case 3:
-            {
-              if (confirm_selection("Confirm root","Yes - apply root to device")) {
-                apply_root_to_device();
+    static char* headersno[] = { "Universal Lagfix Kernel Not Found",
+                                 "These options only work if ULK is used",
+                                 "",
+                                 NULL };
+    static char* listno[] = { "Okay", NULL };
+
+    struct stat ss;
+    // we check for the pre-init.log, which this kernel creates each run
+    if (stat("/res/pre-init.log",&ss)!=0) {
+      get_menu_selection(headersno,listno,0);
+    } else {
+      for (;;)
+      {
+          int chosen_item = get_menu_selection(headers, list, 0);
+          if (chosen_item == GO_BACK)
+              break;
+          switch (chosen_item)
+          {
+              case 0:
+                  __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "recovery");
+                  break;
+              case 1:
+                  __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "download");
+                  break;
+              case 2: {
+                  gr_exit();
+                  ev_exit();
+                  ensure_root_path_mounted("SYSTEM:");
+                  ensure_root_path_mounted("DATA:");
+                  ensure_root_path_mounted("DATADATA:");
+                  ensure_root_path_mounted("CACHE:");
+                  __system("/sbin/rec2e");
+                  // should not happen
+                  ui_init();
+                  ui_print("Back from rec2e");
               }
-              break;
-            }
-            case 4:
-            {
-              lagfix_menu();
-              break;
-            }
-            case 5:
-            {
-              tweak_menu();
-              break;
-            }
-            case 6:
-            {
-              bln_menu();
-              break;
-            }
-        }
+                  break;
+              case 3:
+              {
+                apply_root_menu();
+                break;
+              }
+              case 4:
+              {
+                lagfix_menu();
+                break;
+              }
+              case 5:
+              {
+                tweak_menu();
+                break;
+              }
+              case 6:
+              {
+                bln_menu();
+                break;
+              }
+          }
+      }
     }
 }

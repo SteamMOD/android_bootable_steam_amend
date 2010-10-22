@@ -316,9 +316,15 @@ int nandroid_restore(const char* backup_path, int restore_boot, int restore_syst
         }
     }
 #endif
-    
-    if (restore_system && 0 != (ret = nandroid_restore_partition(backup_path, "SYSTEM:")))
-        return ret;
+   
+    if (restore_system) {
+      if (0 != (ret = nandroid_restore_partition(backup_path, "SYSTEM:")))
+          return ret;
+      // we don't want to restore the /system/etc/lagfix.conf files as they can cause problems
+      ensure_root_path_mounted("SYSTEM:");
+      __system("rm /system/etc/lagfix.conf");
+      __system("rm /system/etc/lagfix.conf.old");
+    }
 
     if (restore_data && 0 != (ret = nandroid_restore_partition(backup_path, "DATA:")))
         return ret;

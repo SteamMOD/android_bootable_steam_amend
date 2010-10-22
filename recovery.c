@@ -565,6 +565,8 @@ main(int argc, char **argv) {
             return setprop_main(argc, argv);
         if (strstr(argv[0], "graphsh"))
             return graphsh_main(argc, argv);
+        if (strstr(argv[0], "graphchoice"))
+            return graphchoice_main(argc, argv);
         if (strstr(argv[0], "truncate"))
             return truncate_main(argc,argv);
         if (strstr(argv[0], "lagfixer"))
