@@ -782,19 +782,32 @@ void bln_menu() {
 
     for (;;)
     {
-        int chosen_item = get_menu_selection(headers, list, 0);
-        if (chosen_item == GO_BACK)
-            break;
-        switch (chosen_item)
-        {
-            case 0:
-              __system("cp /res/misc/lights.s5pc110.so.on /system/lib/hw/lights.s5pc110.so");
-              break;
-            case 1:
-              __system("cp /res/misc/lights.s5pc110.so.off /system/lib/hw/lights.s5pc110.so");
-              break;
-        }
-    }
+	unsigned int bln_enabled = 0;
+	FILE* f = fopen("/system/etc/bln.conf","r");
+	if (f)
+	    fscanf (f,"%u",&bln_enabled);
+	ui_print("\n\nBLN is now: %s\n", bln_enabled? "enabled":"disabled");
+	int chosen_item = get_menu_selection(headers, list, 0);
+	if (chosen_item == GO_BACK)
+	    break;
+	switch (chosen_item)
+	{
+	    case 0:
+		bln_enabled = 1;
+		break;
+	    case 1:
+		bln_enabled = 0;
+		break;
+	}
+	
+	f = fopen("/system/etc/bln.conf","w+");
+	if (f) {
+	    fprintf(f,"%u\n", bln_enabled);
+	    fclose(f);
+	} else {
+	    ui_print("Could not create config file\n");
+	}
+}
 
 }
 
