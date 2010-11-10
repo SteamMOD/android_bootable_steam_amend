@@ -573,11 +573,14 @@ int create_lagfix_partition(int id) {
       sprintf(tmp,"/sbin/fat.format -l %s -F 32 -S 4096 -s 4 %s",name,blockname);
       // we can't create small partitions that are valid as rfs with fat.format, so we'll use some compressed pre-made valid rfs images
     } else {
+      // EDIT: it seems we can
+      sprintf(tmp,"/sbin/fat.format %s",blockname);
+      /*
       if (id==1) {
         sprintf(tmp,"gunzip -c /res/misc/dbdata.rfs.gz | dd of=%s",blockname);
       } else {
         sprintf(tmp,"gunzip -c /res/misc/cache.rfs.gz | dd of=%s",blockname);
-      }
+      }*/
     }
     __system(tmp);
   } else if (ft==1) {
