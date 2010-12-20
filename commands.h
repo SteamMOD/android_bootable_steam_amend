@@ -14,15 +14,83 @@
  * limitations under the License.
  */
 
-#ifndef RECOVERY_COMMANDS_H_
-#define RECOVERY_COMMANDS_H_
+#ifndef AMEND_COMMANDS_H_
+#define AMEND_COMMANDS_H_
 
-#include "minzip/Zip.h"
+#include "permissions.h"
 
-typedef struct {
-    ZipArchive *package;
-} RecoveryCommandContext;
+/* Invoke or dry-run a command.  If "permissions" is non-NULL,
+ * the hook should fill it out with the list of files and operations that
+ * it would need to complete its operation.  If "permissions" is NULL,
+ * the hook should do the actual work specified by its arguments.
+ *
+ * When a command is called with non-NULL "permissions", some arguments
+ * may be NULL.  A NULL argument indicates that the argument is actually
+ * the output of another function, so is not known at permissions time.
+ * The permissions of leaf-node functions (those that have only literal
+ * strings as arguments) will get appended to the permissions of the
+ * functions that call them.  However, to be completely safe, functions
+ * that receive a NULL argument should request the broadest-possible
+ * permissions for the range of the input argument.
+ *
+ * When a boolean command is called, "argc" is the boolean value and
+ * "argv" is NULL.
+ */
+typedef int (*CommandHook)(const char *name, void *cookie,
+                                int argc, const char *argv[],
+                                PermissionRequestList *permissions);
 
-int register_update_commands(RecoveryCommandContext *ctx);
+int commandInit(void);
+void commandCleanup(void);
 
-#endif  // RECOVERY_COMMANDS_H_
+/*
+ * Command management
+ */
+
+struct Command;
+typedef struct Command Command;
+
+typedef enum {
+    CMD_ARGS_UNKNOWN = -1,
+    CMD_ARGS_BOOLEAN = 0,
+    CMD_ARGS_WORDS
+} CommandArgumentType;
+
+int registerCommand(const char *name,
+        CommandArgumentType argType, CommandHook hook, void *cookie);
+
+Command *findCommand(const char *name);
+
+CommandArgumentType getCommandArgumentType(Command *cmd);
+
+int callCommand(Command *cmd, int argc, const char *argv[]);
+int callBooleanCommand(Command *cmd, bool arg);
+
+int getCommandPermissions(Command *cmd, int argc, const char *argv[],
+        PermissionRequestList *permissions);
+int getBooleanCommandPermissions(Command *cmd, bool arg,
+        PermissionRequestList *permissions);
+
+/*
+ * Function management
+ */
+
+typedef int (*FunctionHook)(const char *name, void *cookie,
+                                int argc, const char *argv[],
+                                char **result, size_t *resultLen,
+                                PermissionRequestList *permissions);
+
+struct Function;
+typedef struct Function Function;
+
+int registerFunction(const char *name, FunctionHook hook, void *cookie);
+
+Function *findFunction(const char *name);
+
+int callFunction(Function *fn, int argc, const char *argv[],
+        char **result, size_t *resultLen);
+
+int getFunctionPermissions(Function *fn, int argc, const char *argv[],
+        PermissionRequestList *permissions);
+
+#endif  // AMEND_COMMANDS_H_
